@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { Providers } from "../providers";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://tampa-motion-website.vercel.app"),
+  metadataBase: new URL("https://10x-tax-software-admin.vercel.app/"),
 };
 
 export default function RootLayout({

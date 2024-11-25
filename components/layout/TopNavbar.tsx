@@ -3,8 +3,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 import { FaUser } from "react-icons/fa";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { siteConfig } from "@/config/site";
 
 const TopNavbar = () => {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -26,9 +29,15 @@ const TopNavbar = () => {
     };
   }, []);
 
+  const dashboardTitle = siteConfig?.sideBarItems?.find(
+    (el: any, index: number) => el?.slug === pathname
+  )?.label;
+
   return (
     <div className="bg-white py-6 px-10 flex justify-between items-center">
-      <h2 className="font-bold text-4xl text-secondary">Dashboard</h2>
+      <h2 className="font-bold text-4xl text-secondary">
+        {dashboardTitle || "User"}
+      </h2>
       <div>
         <div className="relative inline-block text-left" ref={dropdownRef}>
           <div>

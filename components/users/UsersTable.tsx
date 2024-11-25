@@ -79,7 +79,7 @@ const UsersTable = () => {
           <ul className="inline-flex -space-x-px text-base h-10">
             <li>
               <a
-                href="#"
+                href=""
                 className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-800 "
               >
                 Previous

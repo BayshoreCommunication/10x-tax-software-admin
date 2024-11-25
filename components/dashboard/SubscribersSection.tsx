@@ -58,6 +58,7 @@ const SubscribersSection = () => {
             {lestSubscribers?.map((el: any, index: number) => (
               <li
                 className={`flex items-center justify-between  py-2 px-4 rounded ${index % 2 === 0 ? "bg-gray-100" : "bg-white"}`}
+                key = {index}
               >
                 <div className="w-[40%]">
                   <h2 className="text-xl font-semibold">{el?.name}</h2>

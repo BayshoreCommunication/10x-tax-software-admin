@@ -60,7 +60,7 @@ const AdminSignin = () => {
               placeholder="Password"
             />
             {/* Eye Icon */}
-            <div
+            <button
               className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
               onClick={togglePasswordVisibility}
             >
@@ -69,7 +69,7 @@ const AdminSignin = () => {
               ) : (
                 <LuEyeOff className="text-primary text-lg" />
               )}
-            </div>
+            </button>
           </div>
         </div>
 

@@ -84,7 +84,10 @@ const OverviewSection = () => {
               </thead>
               <tbody>
                 {newPayment?.map((el: any, index: number) => (
-                  <tr className="bg-white border-b  hover:bg-gray-50 text-base font-medium">
+                  <tr
+                    className="bg-white border-b  hover:bg-gray-50 text-base font-medium"
+                    key={index}
+                  >
                     <td className="px-6 py-4">0{index + 1}</td>
                     <td className="px-6 py-4 ">{el?.name}</td>
                     <td className="px-6 py-4 ">{el?.email}</td>
@@ -126,7 +129,10 @@ const OverviewSection = () => {
               </thead>
               <tbody>
                 {newPayment?.map((el: any, index: number) => (
-                  <tr className="bg-white border-b  hover:bg-gray-50 text-base font-medium">
+                  <tr
+                    className="bg-white border-b  hover:bg-gray-50 text-base font-medium"
+                    key={index}
+                  >
                     <td className="px-6 py-4">0{index + 1}</td>
                     <td className="px-6 py-4 ">{el?.name}</td>
                     <td className="px-6 py-4 ">{el?.email}</td>

@@ -95,7 +95,10 @@ const TaxSettings = () => {
           </thead>
           <tbody>
             {taxInfoData?.map((el: any, index: number) => (
-              <tr className="border-b text-[16px] font-medium text-gray-800 text-center  cursor-pointer border-gray-300">
+              <tr
+                className="border-b text-[16px] font-medium text-gray-800 text-center  cursor-pointer border-gray-300"
+                key={index}
+              >
                 <td className="px-6 py-4 border-r-1 border-gray-300 hover:bg-gray-100">
                   {el?.TaxRate}
                 </td>

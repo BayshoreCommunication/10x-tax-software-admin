@@ -4,6 +4,7 @@ import { usersDemoData } from "@/config/data";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const UsersTable = () => {
   const router = useRouter();
@@ -51,6 +52,7 @@ const UsersTable = () => {
           <tbody>
             {usersDemoData?.map((el: any, index: number) => (
               <tr
+                key={index}
                 className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b text-[16px] font-medium text-gray-800 text-center hover:bg-gray-100 cursor-pointer"
                 onClick={() => router.push(`/users/${index}`)}
               >
@@ -77,48 +79,40 @@ const UsersTable = () => {
           className="flex justify-end mt-8"
         >
           <ul className="inline-flex -space-x-px text-base h-10">
-            <li>
-              <a
-                href=""
-                className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-800"
-              >
-                Previous
-              </a>
-            </li>
-            <li>
-              <a
-                href=""
-                className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 "
-              >
-                1
-              </a>
-            </li>
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 "
-              >
-                2
-              </a>
-            </li>
+            <Link
+              href="#"
+              className="flex items-center justify-center px-4 h-10 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-800"
+            >
+              Previous
+            </Link>
 
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 "
-              >
-                ...
-              </a>
-            </li>
+            <Link
+              href="#"
+              className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 "
+            >
+              1
+            </Link>
 
-            <li>
-              <a
-                href="#"
-                className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 "
-              >
-                Next
-              </a>
-            </li>
+            <Link
+              href="#"
+              className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 "
+            >
+              2
+            </Link>
+
+            <Link
+              href="#"
+              className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 "
+            >
+              ...
+            </Link>
+
+            <Link
+              href="#"
+              className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 "
+            >
+              Next
+            </Link>
           </ul>
         </nav>
       </div>

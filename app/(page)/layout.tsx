@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="en">
       <head />
       <body className={clsx("antialiased")}>
-        <Providers themeProps={{ attribute: "class" }}>
+        <Providers themeProps={{ attribute: "className" }}>
           <div className="flex items-start">
             <div className="2xl:w-[15%] xl:w-[22%] lg:w-[30%]">
               <Sidebar />

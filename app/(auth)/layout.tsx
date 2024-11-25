@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <head />
       <body className={clsx("antialiased")}>
-        <Providers themeProps={{ attribute: "class" }}>
+        <Providers themeProps={{ attribute: "className" }}>
           <div className="overflow-x-hidden">{children}</div>
         </Providers>
       </body>

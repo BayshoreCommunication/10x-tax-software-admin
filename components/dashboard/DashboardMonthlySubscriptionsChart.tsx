@@ -36,11 +36,11 @@ const DashboardMonthlySubscriptionsChart = () => {
         <div className="w-[85%]">
           <div className="flex items-center space-x-16 mb-10 ml-5">
             <div className="flex items-center space-x-4">
-              <div className="bg-primary border-gray-300 border-2 w-14 h-5" />{" "}
+              <div className="bg-primary border-gray-300 border-2 w-14 h-5" />
               <h2 className="text-lg font-medium text-gray-700 mb-1">Trials</h2>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="bg-secondary border-gray-300 border-2 w-14 h-5" />{" "}
+              <div className="bg-secondary border-gray-300 border-2 w-14 h-5" />
               <h2 className="text-lg font-medium text-gray-700 mb-1">
                 Subscribed
               </h2>

@@ -37,14 +37,12 @@ const OTPVerification = () => {
           />
           <input
             type="text"
-
             className="w-12 h-12 text-center border-b-2 border-gray-400 focus:outline-none focus:border-primary text-xl"
             placeholder="7"
             value={2}
           />
           <input
             type="text"
-   
             className="w-12 h-12 text-center border-b-2 border-gray-400 focus:outline-none focus:border-primary text-xl"
             placeholder="3"
             value={7}

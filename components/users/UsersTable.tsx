@@ -87,7 +87,7 @@ const UsersTable = () => {
             </li>
             <li>
               <a
-                href="#"
+                href=""
                 className="flex items-center justify-center px-4 h-10 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 "
               >
                 1

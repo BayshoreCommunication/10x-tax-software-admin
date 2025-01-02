@@ -1,4 +1,4 @@
-import UserAuth from "@/components/userAuth/UserAuth";
+import UserSignin from "@/components/userAuth/UserSignin";
 
 export const metadata = {
   title: "10x Tax Software",
@@ -18,7 +18,7 @@ export const metadata = {
 const page = () => {
   return (
     <div>
-      <UserAuth />
+      <UserSignin />
     </div>
   );
 };

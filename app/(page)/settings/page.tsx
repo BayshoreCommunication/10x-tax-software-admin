@@ -1,10 +1,12 @@
+import { getUserData } from "@/app/actions/user";
 import UserInformation from "@/components/settings/UserInformation";
-import React from "react";
 
-const page = () => {
+const page = async () => {
+  const { ok, data: userData, error } = await getUserData();
+
   return (
     <div className="p-7  bg-[#eeeeee]">
-      <UserInformation />
+      <UserInformation userData={userData} />
     </div>
   );
 };

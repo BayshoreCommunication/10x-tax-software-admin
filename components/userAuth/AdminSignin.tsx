@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { LuUsers2, LuLock, LuEyeOff, LuEye } from "react-icons/lu";
+import { LuLock, LuEyeOff, LuEye, LuUsers } from "react-icons/lu";
 import { Checkbox } from "@nextui-org/react";
 
 const AdminSignin = () => {
@@ -27,7 +27,7 @@ const AdminSignin = () => {
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <LuUsers2 className="text-primary text-lg" />
+              <LuUsers className="text-primary text-lg" />
             </div>
             <input
               autoComplete="off"

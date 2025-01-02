@@ -4,12 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { HiOutlineReceiptTax } from "react-icons/hi";
-import { LuSettings, LuUsers2 } from "react-icons/lu";
+import { LuSettings, LuUser } from "react-icons/lu";
 import { RxDashboard } from "react-icons/rx";
 
 const navItems = [
   { slug: "/", label: "Dashboard", icon: <RxDashboard /> },
-  { slug: "/users", label: "Users", icon: <LuUsers2 /> },
+  { slug: "/users", label: "Users", icon: <LuUser /> },
   {
     slug: "/tax-settings",
     label: "Tax Settings",

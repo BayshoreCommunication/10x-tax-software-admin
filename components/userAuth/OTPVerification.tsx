@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { LuUsers2, LuLock, LuEyeOff, LuEye } from "react-icons/lu";
+import { LuUsers, LuLock, LuEyeOff, LuEye } from "react-icons/lu";
 import { Checkbox } from "@nextui-org/react";
 
 const OTPVerification = () => {

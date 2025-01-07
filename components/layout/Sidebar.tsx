@@ -41,7 +41,7 @@ const Sidebar = () => {
                 alt="10x Tax Software"
                 className="w-[100px] h-[95px]"
                 height={95}
-                src="/assets/site-logo/10x-tax-logo.png"
+                src="/assets/site-logo/10x-tax.png"
                 width={100}
               />
             </Link>

@@ -29,7 +29,7 @@ export async function getUserData(): Promise<UserDataResponse> {
           "Content-Type": "application/json",
           Authorization: `${session?.user?.accessToken || ""}`,
         },
-        next: { revalidate: 360 },
+        next: { tags: ["taxRangeSheetUpdate"], revalidate: 360 },
       }
     );
 
@@ -120,197 +120,176 @@ export async function updateUserData(
   }
 }
 
-export async function userImageUpload(
-  formData: FormData
-): Promise<{ message: string; status: number }> {
-  const file = formData.get("image");
+// Get all user list
 
+export async function getAllUserData(
+  search: string = "",
+  page: number = 1,
+  limit: number = 10000
+): Promise<UserDataResponse> {
   const session = await auth();
 
-  // Check for authentication and access token
-  // if (!session?.user?.accessToken) {
-  //   return {
-  //     error: "User is not authenticated.",
-  //     ok: false,
-  //   };
-  // }
-
-  if (!file || typeof file === "string") {
-    return { message: "Invalid file", status: 400 };
+  if (!session?.user?.accessToken) {
+    return {
+      error: "User is not authenticated.",
+      ok: false,
+    };
   }
-
-  const response = await fetch("http://localhost:8000/api/update-user", {
-    method: "PUT",
-    body: formData,
-  });
-
-  if (!response.ok) {
-    return { message: "Failed to upload image", status: response.status };
-  }
-
-  return { message: "Image uploaded successfully", status: 200 };
-}
-
-//  update user password
-
-export async function updateUserPassword(
-  formData: FormData
-): Promise<{ error?: string; ok: boolean }> {
-  const session = await auth();
 
   try {
+    const query = new URLSearchParams({
+      search,
+      page: page.toString(),
+      limit: limit.toString(),
+    }).toString();
+
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/user/reset-password-otpcheck`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/users?${query}`,
       {
-        method: "PUT",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `${session?.user?.accessToken || ""}`,
+          Authorization: `${session.user.accessToken}`,
         },
-        body: JSON.stringify(formData),
+        next: { tags: ["userUpdate", "userDelete"], revalidate: 360 },
       }
     );
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error("Failed to fetch user data:", errorData);
       return {
-        error: errorData?.message || "Failed to update user password.",
+        error: errorData?.message || "Failed to fetch user data.",
         ok: false,
+        data: null,
+      };
+    }
+
+    const data = await response.json();
+
+    return {
+      ok: true,
+      data: data?.payload || null,
+    };
+  } catch (error: any) {
+    console.error("Error fetching user data:", error);
+    return {
+      error:
+        error?.message ||
+        "An unexpected error occurred. Please try again later.",
+      ok: false,
+      data: null,
+    };
+  }
+}
+
+// User delted by id
+
+export async function userDeletedById(id: string): Promise<UserDataResponse> {
+  const session = await auth();
+
+  if (!session?.user?.accessToken) {
+    return {
+      error: "User is not authenticated.",
+      ok: false,
+      data: null,
+    };
+  }
+
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/user/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${session.user.accessToken}`,
+        },
+      }
+    );
+    revalidateTag("userDelete");
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to delete user:", errorData);
+      return {
+        error: errorData?.message || "Failed to delete user.",
+        ok: false,
+        data: null,
       };
     }
 
     const data = await response.json();
     return {
       ok: true,
-      ...data,
+      data: data?.payload || null,
     };
   } catch (error) {
-    console.error("Error updating user password:", error);
+    console.error("Error deleting user:", error);
     return {
       error: "An unexpected error occurred. Please try again later.",
       ok: false,
+      data: null,
     };
   }
 }
 
-export async function updateUserPasswordOtpVerify(
-  formData: FormData
-): Promise<{ error: string; ok: boolean }> {
+// User delted by id
+
+export async function userSubscriptionById(
+  id: string,
+  search: string = "",
+  page: number = 1
+): Promise<UserDataResponse> {
   const session = await auth();
 
+  if (!session?.user?.accessToken) {
+    return {
+      error: "User is not authenticated.",
+      ok: false,
+      data: null,
+    };
+  }
+
   try {
+    const queryParams = new URLSearchParams({
+      search,
+      page: page.toString(),
+    });
+
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/user/reset-password-verify`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/subscription/${id}?${queryParams}`,
       {
-        method: "PUT",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: ` ${session?.user?.accessToken}`,
+          Authorization: `${session.user.accessToken}`,
         },
-        body: JSON.stringify(formData),
       }
     );
+    revalidateTag("userUpdate");
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error("Failed to fetch subscription data:", errorData);
       return {
-        error: errorData?.message || "Failed to update user data.",
+        error: errorData?.message || "Failed to fetch subscription data.",
         ok: false,
+        data: null,
       };
     }
 
     const data = await response.json();
     return {
       ok: true,
-      ...data,
+      data: data?.payload || null,
     };
   } catch (error) {
-    console.error("Error updating user password:", error);
+    console.error("Error fetching subscription data:", error);
     return {
       error: "An unexpected error occurred. Please try again later.",
       ok: false,
-    };
-  }
-}
-
-//  update user email
-
-export async function updateUserEmail(
-  formData: FormData
-): Promise<{ error?: string; ok: boolean }> {
-  const session = await auth();
-
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/user/email-change-otpcheck`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `${session?.user?.accessToken || ""}`,
-        },
-        body: JSON.stringify(formData),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      return {
-        error: errorData?.message || "Failed to update user email.",
-        ok: false,
-      };
-    }
-
-    const data = await response.json();
-    return {
-      ok: true,
-      ...data,
-    };
-  } catch (error) {
-    console.error("Error updating user email", error);
-    return {
-      error: "An unexpected error occurred. Please try again later.",
-      ok: false,
-    };
-  }
-}
-
-export async function updateUserEmailOtpVerify(
-  formData: FormData
-): Promise<{ error: string; ok: boolean }> {
-  const session = await auth();
-
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/user/email-change-verify`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: ` ${session?.user?.accessToken}`,
-        },
-        body: JSON.stringify(formData),
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      return {
-        error: errorData?.message || "Failed to update user data.",
-        ok: false,
-      };
-    }
-
-    const data = await response.json();
-    return {
-      ok: true,
-      ...data,
-    };
-  } catch (error) {
-    console.error("Error updating user email:", error);
-    return {
-      error: "An unexpected error occurred. Please try again later.",
-      ok: false,
+      data: null,
     };
   }
 }

@@ -1,13 +1,8 @@
 "use client";
 
-import React from "react";
-import { PieChart, Pie, Cell } from "recharts";
 import { BsEmojiGrin } from "react-icons/bs";
+import { Cell, Pie, PieChart } from "recharts";
 
-const data = [
-  { name: "Completed", value: 60.9 },
-  { name: "Remaining", value: 39.1 },
-];
 const COLORS = ["#D4A537", "#F2E6B3"]; // Adjusted colors for the chart
 
 const size = 350; // Base size for the container
@@ -17,7 +12,23 @@ const outerRadiusRatio = 0.3; // Ratio of outer radius to container size
 const innerRadius = size * innerRadiusRatio;
 const outerRadius = size * outerRadiusRatio;
 
-const SubscriptionsRatioChart = () => {
+const SubscriptionsRatioChart = ({ userStats }: any) => {
+  const data = [
+    {
+      name: "Completed",
+      value: parseFloat(userStats?.monthlyRatio?.replace("%", "")),
+    },
+    {
+      name: "Remaining",
+      value: 100 - parseFloat(userStats?.monthlyRatio?.replace("%", "")),
+    },
+  ];
+
+  // Optionally, round to two decimal places if needed:
+  data.forEach((item) => {
+    item.value = Math.round(item.value * 100) / 100;
+  });
+
   return (
     <div
       style={{
@@ -74,7 +85,7 @@ const SubscriptionsRatioChart = () => {
           </span>
         </div>
         <div style={{ fontSize: `${size * 0.08}px`, fontWeight: "bold" }}>
-          60.9%
+          {userStats?.monthlyRatio}
         </div>
       </div>
     </div>

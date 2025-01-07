@@ -1,6 +1,6 @@
 import DashboardMonthlySubscriptionsChart from "@/components/dashboard/DashboardMonthlySubscriptionsChart";
 import OverviewSection from "@/components/dashboard/OverviewSection";
-import SubscribersSection from "@/components/dashboard/SubscribersSection";
+import { getAllUserData } from "../actions/user";
 
 export const metadata = {
   title: "10x Tax Software",
@@ -17,12 +17,13 @@ export const metadata = {
   },
 };
 
-const page = () => {
+const page = async () => {
+  const { ok, data: usersDataList, error } = await getAllUserData();
+
   return (
     <div className="p-7  bg-[#eeeeee]">
-      <DashboardMonthlySubscriptionsChart />
-      <SubscribersSection />
-      <OverviewSection />
+      <DashboardMonthlySubscriptionsChart usersDataList={usersDataList} />
+      <OverviewSection usersDataList={usersDataList} />
     </div>
   );
 };

@@ -1,10 +1,11 @@
+import { getAllUserData } from "@/app/actions/user";
 import UserDetails from "@/components/users/UserDetails";
-import { usersDemoData } from "@/config/data";
-import React from "react";
 
 const page = async ({ params }: any) => {
-  const userDetails = usersDemoData?.find(
-    (user: any, index: number) => index === parseInt(params.id)
+  const { ok, data: usersDataList, error } = await getAllUserData();
+
+  const userDetails = await usersDataList?.users?.find(
+    (user: any) => user._id === params?.id
   );
 
   return (

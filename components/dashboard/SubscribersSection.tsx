@@ -1,5 +1,5 @@
-import React from "react";
-import { IoShapes } from "react-icons/io5";
+"use client";
+import { formatDate } from "../shared/DateFormat";
 import SubscriptionsRatioChart from "../shared/rechart/SubscriptionsRatioChart";
 import SubscriptionsWaveRatioChart from "../shared/rechart/SubscriptionsWaveRatioChart";
 
@@ -41,7 +41,17 @@ const lestSubscribers = [
   },
 ];
 
-const SubscribersSection = () => {
+const SubscribersSection = ({ usersDataList, userStats }: any) => {
+  const paymentList = usersDataList?.users?.sort(
+    (a: any, b: any) =>
+      new Date(b?.currentSubscriptionPayDate).getTime() -
+      new Date(a?.currentSubscriptionPayDate).getTime()
+  );
+
+  const newPaymentList = paymentList.slice(0, 5);
+
+  console.log("cehckd agfeds", userStats);
+
   return (
     <div className=" my-7 flex items-stretch justify-between gap-x-7 w-full">
       <div className=" bg-white p-12 w-[75%]">
@@ -55,38 +65,46 @@ const SubscribersSection = () => {
         </div>
         <div className="mt-6">
           <ul className="max-w-md space-y-1 text-gray-700 list-none list-inside">
-            {lestSubscribers?.map((el: any, index: number) => (
-              <li
-                className={`flex items-center justify-between  py-2 px-4 rounded ${index % 2 === 0 ? "bg-gray-100" : "bg-white"}`}
-                key = {index}
-              >
-                <div className="w-[40%]">
-                  <h2 className="text-xl font-semibold">{el?.name}</h2>
-                  <p className="text-lg text-gray-700 font-normal mt-1">
-                    {el?.phone}
-                  </p>
-                </div>
-                <div className="w-[30%]">
-                  <h2
-                    className={`text-lg font-medium px-2 py-2 w-[150px] rounded-lg flex items-center justify-center 
-                  ${
-                    el?.status === "Cancel"
-                      ? "bg-red-100"
-                      : el?.status === "Subscribed"
-                        ? "bg-green-100"
-                        : "bg-gray-300"
-                  }`}
-                  >
-                    {el?.status}
-                  </h2>
-                </div>
-                <div className="w-[30%]">
-                  <h2 className="text-lg font-medium text-center">
-                    {el?.date}
-                  </h2>
-                </div>
+            {newPaymentList?.length === 0 ? (
+              <li>
+                <p className="text-center text-gray-600 text-lg mt-16">
+                  New subscription not available!
+                </p>
               </li>
-            ))}
+            ) : (
+              <>
+                {newPaymentList?.map((el: any, index: number) => (
+                  <li
+                    className={`flex items-center justify-between  py-2 px-4 rounded ${index % 2 === 0 ? "bg-gray-100" : "bg-white"}`}
+                    key={index}
+                  >
+                    <div className="w-[40%]">
+                      <h2 className="text-xl font-semibold">
+                        {el?.businessName}
+                      </h2>
+                      <p className="text-lg text-gray-700 font-normal mt-1">
+                        {el?.phone}
+                      </p>
+                    </div>
+                    <div className="w-[30%]">
+                      <h2
+                        className={`text-lg font-medium px-2 py-2 w-[150px] rounded-lg flex items-center justify-center 
+                  ${el?.subscription ? "bg-green-100" : "bg-gray-300"}`}
+                      >
+                        {el?.subscription ? "Subscribed" : "Not Subscribed"}
+                      </h2>
+                    </div>
+                    <div className="w-[30%]">
+                      <h2 className="text-lg font-medium text-center">
+                        {el?.currentSubscriptionPayDate
+                          ? formatDate(el?.currentSubscriptionPayDate)
+                          : "Not Paid"}
+                      </h2>
+                    </div>
+                  </li>
+                ))}
+              </>
+            )}
           </ul>
         </div>
       </div>
@@ -95,7 +113,7 @@ const SubscribersSection = () => {
           Subscription Ratio
         </h2>
         <div className="flex items-center justify-center ">
-          <SubscriptionsRatioChart />
+          <SubscriptionsRatioChart userStats={userStats} />
         </div>
 
         <div className="flex items-center justify-between gap-x-16 -mt-2">
@@ -103,7 +121,9 @@ const SubscribersSection = () => {
             <h2 className="text-xl font-normal text-gray-700 mb-1">
               Last Month
             </h2>
-            <h2 className="text-4xl font-bold text-gray-700">72.1%</h2>
+            <h2 className="text-4xl font-bold text-gray-700">
+              {userStats?.currentMonthVsLastMonthRatio}
+            </h2>
           </div>
           <div className="w-full flex justify-end">
             <SubscriptionsWaveRatioChart />

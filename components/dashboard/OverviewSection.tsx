@@ -1,9 +1,6 @@
-import React from "react";
-import { IoCalendarOutline } from "react-icons/io5";
+"use client";
 import { LuCalendarDays } from "react-icons/lu";
-
-import SubscriptionsRatioChart from "../shared/rechart/SubscriptionsRatioChart";
-import SubscriptionsWaveRatioChart from "../shared/rechart/SubscriptionsWaveRatioChart";
+import { formatDate } from "../shared/DateFormat";
 
 const newPayment = [
   {
@@ -48,7 +45,23 @@ const newPayment = [
   },
 ];
 
-const OverviewSection = () => {
+const OverviewSection = ({ usersDataList }: any) => {
+  const paymentList = usersDataList?.users?.sort(
+    (a: any, b: any) =>
+      new Date(b?.currentSubscriptionPayDate).getTime() -
+      new Date(a?.currentSubscriptionPayDate).getTime()
+  );
+
+  const newPaymentList = paymentList.slice(0, 5);
+
+  const client = usersDataList?.users?.sort(
+    (a: any, b: any) =>
+      new Date(b?.currentSubscriptionPayDate).getTime() -
+      new Date(a?.currentSubscriptionPayDate).getTime()
+  );
+
+  const recentClient = client?.slice(0, 5);
+
   return (
     <div className=" my-7 flex items-stretch justify-between gap-x-7 w-full">
       <div className=" bg-white p-12 w-[55%]">
@@ -57,11 +70,11 @@ const OverviewSection = () => {
             <h2 className="text-2xl font-bold text-gray-800">New Payment</h2>
             <LuCalendarDays className="text-gray-700 size-6" />
           </div>
-          <div className="">
+          {/* <div className="">
             <button className="px-2 py-1.5 border-2 border-primary text-primary rounded-md font-medium text-base hover:bg-primary hover:text-white w-[120px]">
               View All
             </button>
-          </div>
+          </div> */}
         </div>
         <div className="mt-8">
           <div className="relative overflow-x-auto  md:rounded-lg">
@@ -71,31 +84,42 @@ const OverviewSection = () => {
                   <th scope="col" className="px-6 py-3 w-[15%]">
                     #
                   </th>
-                  <th scope="col" className="px-6 py-3 w-[15%]">
+                  <th scope="col" className="px-6 py-3 w-[20%]">
                     Name
                   </th>
                   <th scope="col" className="px-6 py-3  w-[40%]">
                     Email
                   </th>
-                  <th scope="col" className="px-6 py-3  w-[30%]">
+                  <th scope="col" className="px-6 py-3  w-[25%]">
                     Subscription Date
                   </th>
                 </tr>
               </thead>
-              <tbody>
-                {newPayment?.map((el: any, index: number) => (
-                  <tr
-                    className="bg-white border-b  hover:bg-gray-50 text-base font-medium"
-                    key={index}
-                  >
-                    <td className="px-6 py-4">0{index + 1}</td>
-                    <td className="px-6 py-4 ">{el?.name}</td>
-                    <td className="px-6 py-4 ">{el?.email}</td>
-                    <td className="px-6 py-4">{el?.subscriptionsDate}</td>
-                  </tr>
-                ))}
-              </tbody>
+              {newPaymentList && (
+                <tbody>
+                  {newPaymentList?.map((el: any, index: number) => (
+                    <tr
+                      className="bg-white border-b  hover:bg-gray-50 text-base font-medium"
+                      key={index}
+                    >
+                      <td className="px-6 py-4">0{index + 1}</td>
+                      <td className="px-6 py-4 ">{el?.businessName}</td>
+                      <td className="px-6 py-4 ">{el?.email}</td>
+                      <td className="px-6 py-4">
+                        {el?.currentSubscriptionPayDate
+                          ? formatDate(el?.currentSubscriptionPayDate)
+                          : "Not Paid"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
             </table>
+            {newPaymentList?.length === 0 && (
+              <p className="text-center text-gray-600 text-lg mt-10">
+                New Payment not available!
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -105,11 +129,11 @@ const OverviewSection = () => {
             <h2 className="text-2xl font-bold text-gray-800">Recent Client</h2>
             <LuCalendarDays className="text-gray-700 size-6" />
           </div>
-          <div className="">
+          {/* <div className="">
             <button className="px-2 py-1.5 border-2 border-primary text-primary rounded-md font-medium text-base hover:bg-primary hover:text-white w-[120px]">
               View All
             </button>
-          </div>
+          </div> */}
         </div>
         <div className="mt-8">
           <div className="relative overflow-x-auto  md:rounded-lg">
@@ -128,18 +152,23 @@ const OverviewSection = () => {
                 </tr>
               </thead>
               <tbody>
-                {newPayment?.map((el: any, index: number) => (
+                {recentClient?.map((el: any, index: number) => (
                   <tr
                     className="bg-white border-b  hover:bg-gray-50 text-base font-medium"
                     key={index}
                   >
                     <td className="px-6 py-4">0{index + 1}</td>
-                    <td className="px-6 py-4 ">{el?.name}</td>
+                    <td className="px-6 py-4 ">{el?.businessName}</td>
                     <td className="px-6 py-4 ">{el?.email}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            {recentClient?.length === 0 && (
+              <p className="text-center text-gray-600 text-lg mt-10">
+                Recent client not available!
+              </p>
+            )}
           </div>
         </div>
       </div>

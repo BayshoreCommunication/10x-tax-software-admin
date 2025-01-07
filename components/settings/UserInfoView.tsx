@@ -87,7 +87,7 @@ const UserInfoView: React.FC<UserInfoViewProps> = ({
         </table>
       </div>
       <button
-        className="px-4 py-2 border-2 bg-primary text-white rounded-md font-medium text-base hover:bg-yellow-600 hover:text-white w-[140px] mt-10"
+        className="px-4 py-2 border-2 bg-primary text-white rounded-md font-medium text-base hover:bg-hoverColor hover:text-white w-[140px] mt-10"
         onClick={() => setUserInfoUpdateFlag(true)}
       >
         Edit Profile

@@ -1,11 +1,11 @@
 "use client";
 
-import { Checkbox } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { LuEye, LuEyeOff, LuLock, LuUsers } from "react-icons/lu";
 
 import { credentialLogin } from "@/app/actions";
+import { Checkbox } from "@nextui-org/react";
 
 interface SigninFormProps {
   setUserSignInOtpFlag: (flag: boolean) => void;
@@ -141,11 +141,25 @@ const SigninForm: React.FC<SigninFormProps> = ({
 
         {/* Remember Me & Links */}
         <div className="flex items-center justify-between mt-3 mb-8">
-          {/* Remember Me */}
           <div className="">
             <Checkbox size="md">Remember me</Checkbox>
           </div>
         </div>
+
+        {/* <div className="flex items-center mt-3 mb-8 space-x-3">
+          <input
+            id="default-checkbox"
+            type="checkbox"
+            value=""
+            className="w-5 h-5 text-primary bg-gray-100 border-primary rounded-xl focus:ring-primary "
+          />
+          <label
+            htmlFor="default-checkbox"
+            className="ms-2 text-base font-medium text-black"
+          >
+            Remember me
+          </label>
+        </div> */}
 
         {/* Error Display */}
         {error && (

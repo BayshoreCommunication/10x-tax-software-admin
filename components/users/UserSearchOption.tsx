@@ -1,29 +1,47 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 
-type UserSearchOptionProps = {
+type ParentState = {
+  subscriptions: never[];
+  pagination: {
+    totalPages: number;
+    previousPage: null;
+    nextPage: null;
+  };
   search: string;
-  setSearch: React.Dispatch<React.SetStateAction<string>>;
+  filterOption: string;
+  currentPage: number;
+  limit: number;
+  isLoading: boolean;
+  error: null;
+};
+
+type UserSearchOptionProps = {
+  state: ParentState;
+  setState: React.Dispatch<React.SetStateAction<ParentState>>;
 };
 
 const UserSearchOption: React.FC<UserSearchOptionProps> = ({
-  search,
-  setSearch,
+  state,
+  setState,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("All"); // State for selected item
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const options = ["All", "Monthly", "Yearly"];
 
-  const toggleDropdown = (value?: string) => {
-    if (value !== undefined) {
-      setSelectedOption(value); // Update selected option
-      setSearch(value); // Notify parent
-    }
-    setIsOpen(!isOpen); // Toggle dropdown
+  const toggleDropdown = () => setIsOpen((prev) => !prev);
+
+  const handleOptionClick = (value: string) => {
+    const optionValue = value === "All" ? "" : value;
+    setState((prev) => ({
+      ...prev,
+      filterOption: optionValue, // Only update the filterOption
+    }));
+    setIsOpen(false);
   };
 
-  const closeDropdown = (e: MouseEvent) => {
+  const handleOutsideClick = (e: MouseEvent) => {
     if (
       dropdownRef.current &&
       !dropdownRef.current.contains(e.target as Node)
@@ -32,83 +50,57 @@ const UserSearchOption: React.FC<UserSearchOptionProps> = ({
     }
   };
 
-  React.useEffect(() => {
-    document.addEventListener("mousedown", closeDropdown);
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
     return () => {
-      document.removeEventListener("mousedown", closeDropdown);
+      document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, []);
 
   return (
-    <div className="">
-      <div className="relative inline-block text-left" ref={dropdownRef}>
-        <button
-          type="button"
-          className={`inline-flex  w-[150px] items-center justify-between gap-x-1.5 rounded mx-4 px-2 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-100 border shadow ${
-            isOpen ? "bg-gray-100" : "bg-white"
-          }`}
-          id="menu-button"
-          aria-expanded={isOpen}
-          aria-haspopup="true"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <h3 className="font-medium text-lg">{selectedOption}</h3>{" "}
-          {/* Display selected option */}
-          <div className="w-6 h-6 flex items-center justify-center">
-            <IoIosArrowDown className="text-gray-600 size-5" />
-          </div>
-        </button>
+    <div ref={dropdownRef} className="relative inline-block text-left">
+      {/* Dropdown Button */}
+      <button
+        type="button"
+        className={`inline-flex w-[150px] items-center justify-between px-4 py-2 text-sm font-semibold text-gray-900 border rounded shadow ring-1 ring-gray-300 hover:bg-gray-100 ${
+          isOpen ? "bg-gray-100" : "bg-white"
+        }`}
+        aria-haspopup="true"
+        aria-expanded={isOpen}
+        onClick={toggleDropdown}
+      >
+        <span className="font-medium text-lg">
+          {state.filterOption || "All"}
+        </span>
+        <IoIosArrowDown className="text-gray-600 w-5 h-5" />
+      </button>
 
-        {isOpen && (
-          <div
-            className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
-            role="menu"
-            aria-orientation="vertical"
-            aria-labelledby="menu-button"
-          >
-            <div className="py-1" role="none">
-              <button
-                onClick={() => toggleDropdown("All")}
-                className={`block w-full px-4 py-2 text-left text-lg ${
-                  selectedOption === "All"
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-primary hover:text-white"
-                }`}
-                role="menuitem"
-                id="menu-item-0"
-              >
-                All
-              </button>
-              <button
-                onClick={() => toggleDropdown("Monthly")}
-                type="button"
-                className={`block w-full px-4 py-2 text-left text-lg ${
-                  selectedOption === "Monthly"
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-primary hover:text-white"
-                }`}
-                role="menuitem"
-                id="menu-item-1"
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => toggleDropdown("Yearly")}
-                type="button"
-                className={`block w-full px-4 py-2 text-left text-lg ${
-                  selectedOption === "Yearly"
-                    ? "bg-primary text-white"
-                    : "text-gray-700 hover:bg-primary hover:text-white"
-                }`}
-                role="menuitem"
-                id="menu-item-2"
-              >
-                Yearly
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Dropdown Menu */}
+      {isOpen && (
+        <div
+          className="absolute right-0 z-10 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none"
+          role="menu"
+        >
+          <ul className="py-1">
+            {options.map((option) => (
+              <li key={option}>
+                <button
+                  type="button"
+                  className={`block w-full px-4 py-2 text-left text-lg ${
+                    state.filterOption === option ||
+                    (option === "All" && !state.filterOption)
+                      ? "bg-primary text-white"
+                      : "text-gray-700 hover:bg-primary hover:text-white"
+                  }`}
+                  onClick={() => handleOptionClick(option)}
+                >
+                  {option}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

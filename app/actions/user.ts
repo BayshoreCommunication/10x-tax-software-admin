@@ -239,7 +239,9 @@ export async function userDeletedById(id: string): Promise<UserDataResponse> {
 export async function userSubscriptionById(
   id: string,
   search: string = "",
-  page: number = 1
+  page: number = 1,
+  limit: number = 100,
+  selectFilterOption: string = "All" // New parameter for filtering
 ): Promise<UserDataResponse> {
   const session = await auth();
 
@@ -255,6 +257,8 @@ export async function userSubscriptionById(
     const queryParams = new URLSearchParams({
       search,
       page: page.toString(),
+      limit: limit.toString(),
+      selectFilterOption, // Add filter option to query params
     });
 
     const response = await fetch(
@@ -267,6 +271,7 @@ export async function userSubscriptionById(
         },
       }
     );
+
     revalidateTag("userUpdate");
 
     if (!response.ok) {

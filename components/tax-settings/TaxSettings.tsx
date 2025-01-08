@@ -7,7 +7,7 @@ const TaxSettings = ({ taxRangeSheet }: any) => {
   const [textUpdateFlag, setTaxUpdateFlag] = useState(false);
 
   return (
-    <div className=" bg-white p-12">
+    <div className=" bg-white 2xl:p-12 xl:p-8 lg:p-6">
       <div className="mb-10">
         <h2 className="text-3xl font-bold text-[#11142D]">Tax Type</h2>
         <div className="flex items-center space-x-2 mt-3">

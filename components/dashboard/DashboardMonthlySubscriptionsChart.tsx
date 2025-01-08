@@ -113,11 +113,11 @@ const DashboardMonthlySubscriptionsChart = ({ usersDataList }: any) => {
 
   return (
     <div className="">
-      <div className="bg-white p-12">
+      <div className="bg-white 2xl:p-12 xl:p-8 lg:p-6">
         <h2 className="text-2xl font-bold text-[#11142D]">
           Subscriptions this Month
         </h2>
-        <div className="w-full my-8 border border-gray-200" />
+        <div className="w-full mb-8 mt-4 border border-gray-200" />
         <div className="flex items-start justify-between">
           <div className="w-[15%]">
             <div className="my-8">

@@ -23,10 +23,10 @@ export default function RootLayout({
         <Providers themeProps={{ attribute: "className" }}>
           <div className="flex items-start">
             <GlobalToast />
-            <div className="2xl:w-[15%] xl:w-[22%] lg:w-[30%]">
+            <div className="2xl:w-[15%] xl:w-[18%] lg:w-[18%]">
               <Sidebar />
             </div>
-            <div className="overflow-x-hidden 2xl:w-[85%] xl:w-[78%] lg:w-[70%]">
+            <div className="overflow-x-hidden 2xl:w-[85%] xl:w-[82%] lg:w-[82%]">
               <TopNavbar />
               {children}
             </div>

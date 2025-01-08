@@ -30,7 +30,7 @@ const Sidebar = () => {
   return (
     <aside
       aria-label="Sidebar"
-      className="h-screen w-full bg-secondary overflow-y-auto sm:translate-x-0 -translate-x-full transition-transform fixed top-0 left-0 2xl:w-[15%] xl:w-[22%] lg:w-[30%]"
+      className="h-screen w-full bg-secondary overflow-y-auto sm:translate-x-0 -translate-x-full transition-transform fixed top-0 left-0 2xl:w-[15%] xl:w-[18%] lg:w-[18%]"
       id="default-sidebar"
     >
       <div className="flex flex-col h-full">
@@ -53,7 +53,7 @@ const Sidebar = () => {
           {navItems.map((item) => (
             <li key={item?.slug}>
               <Link
-                className={`flex items-center px-5 py-3 text-white transition-colors w-full 
+                className={`flex items-center px-5 xl:py-3 py-2 text-white transition-colors w-full 
                   border-t border-b border-gray-500 ${
                     currentPath === item?.slug
                       ? "bg-primary"

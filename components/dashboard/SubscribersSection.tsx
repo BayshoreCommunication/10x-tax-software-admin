@@ -53,8 +53,8 @@ const SubscribersSection = ({ usersDataList, userStats }: any) => {
   console.log("cehckd agfeds", userStats);
 
   return (
-    <div className=" my-7 flex items-stretch justify-between gap-x-7 w-full">
-      <div className=" bg-white p-12 w-[75%]">
+    <div className=" my-5 flex items-stretch justify-between gap-x-5 w-full">
+      <div className=" bg-white 2xl:p-12 xl:p-8 lg:p-6 w-[75%]">
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-gray-800">
             Latest Subscribers
@@ -79,23 +79,23 @@ const SubscribersSection = ({ usersDataList, userStats }: any) => {
                     key={index}
                   >
                     <div className="w-[40%]">
-                      <h2 className="text-xl font-semibold">
+                      <h2 className="2xl:text-xl xl:text-lg lg:text-base font-semibold">
                         {el?.businessName}
                       </h2>
-                      <p className="text-lg text-gray-700 font-normal mt-1">
+                      <p className="2xl:text-lg xl:text-base lg:text-sm text-gray-700 font-normal mt-px 2xl:mt-2">
                         {el?.phone}
                       </p>
                     </div>
                     <div className="w-[30%]">
                       <h2
-                        className={`text-lg font-medium px-2 py-2 w-[150px] rounded-lg flex items-center justify-center 
+                        className={`2xl:text-lg xl:text-base lg:text-sm font-medium px-2 py-2 w-[150px] rounded-lg flex items-center justify-center 
                   ${el?.subscription ? "bg-green-100" : "bg-gray-300"}`}
                       >
                         {el?.subscription ? "Subscribed" : "Not Subscribed"}
                       </h2>
                     </div>
                     <div className="w-[30%]">
-                      <h2 className="text-lg font-medium text-center">
+                      <h2 className="2xl:text-lg xl:text-base lg:text-sm font-medium text-center">
                         {el?.currentSubscriptionPayDate
                           ? formatDate(el?.currentSubscriptionPayDate)
                           : "Not Paid"}
@@ -108,7 +108,7 @@ const SubscribersSection = ({ usersDataList, userStats }: any) => {
           </ul>
         </div>
       </div>
-      <div className=" bg-white p-12 w-[35%]">
+      <div className=" bg-white 2xl:p-12 xl:p-8 lg:p-6 w-[35%]">
         <h2 className="text-2xl font-bold text-gray-800 -mb-3">
           Subscription Ratio
         </h2>
@@ -118,10 +118,10 @@ const SubscribersSection = ({ usersDataList, userStats }: any) => {
 
         <div className="flex items-center justify-between gap-x-16 -mt-2">
           <div className="my-1">
-            <h2 className="text-xl font-normal text-gray-700 mb-1">
+            <h2 className="2xl:text-xl xl:text-lg font-normal text-gray-700 mb-1">
               Last Month
             </h2>
-            <h2 className="text-4xl font-bold text-gray-700">
+            <h2 className="2xl:text-4xl xl:text-2xl lg:text-xl font-bold text-gray-700">
               {userStats?.currentMonthVsLastMonthRatio}
             </h2>
           </div>

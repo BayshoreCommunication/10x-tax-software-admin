@@ -21,7 +21,7 @@ const UserInformation: React.FC<UserInformationProps> = ({ userData }) => {
   const [userInfoUpdateFlag, setUserInfoUpdateFlag] = useState(false);
 
   return (
-    <div className="bg-white p-12">
+    <div className="bg-white 2xl:p-12 xl:p-8 lg:p-6">
       {userInfoUpdateFlag ? (
         <UserUpdateInfo
           userInfoUpdateFlag={userInfoUpdateFlag}

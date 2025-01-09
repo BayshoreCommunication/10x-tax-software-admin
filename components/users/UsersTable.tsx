@@ -70,7 +70,7 @@ const UsersTable = () => {
   };
 
   return (
-    <div className="bg-white p-12">
+    <div className="bg-white 2xl:p-12 xl:p-8 lg:p-6">
       {/* Search Bar */}
       <div className="mb-10">
         <form>
@@ -100,42 +100,45 @@ const UsersTable = () => {
         <div className="relative overflow-x-auto">
           {/* Table */}
           <table className="w-full text-left rtl:text-right text-gray-500">
-            <thead className="text-[16px] font-medium text-gray-800 bg-gray-100 text-center">
+            <thead className="2xl:text-base text-sm font-medium text-gray-800 bg-gray-100 text-center">
               <tr>
-                <th scope="col" className="px-6 py-3 bg-primary text-white">
+                <th
+                  scope="col"
+                  className="2xl:px-6 xl:px-4 px-2 py-3 bg-primary text-white"
+                >
                   NO
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 border-r-1 border-gray-300"
+                  className="2xl:px-6 xl:px-4 px-2 py-3 border-r-1 border-gray-300"
                 >
                   Name
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 border-r-1 border-gray-300"
+                  className="2xl:px-6 xl:px-4 px-2 py-3 border-r-1 border-gray-300"
                 >
                   Phone
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 border-r-1 border-gray-300"
+                  className="2xl:px-6 xl:px-4 px-2 py-3 border-r-1 border-gray-300"
                 >
                   Email
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 border-r-1 border-gray-300"
+                  className="2xl:px-6 xl:px-4 px-2 py-3 border-r-1 border-gray-300"
                 >
                   Subscription
                 </th>
                 <th
                   scope="col"
-                  className="px-6 py-3 border-r-1 border-gray-300"
+                  className="2xl:px-6 xl:px-4 px-2 py-3 border-r-1 border-gray-300"
                 >
                   Register Date
                 </th>
-                <th scope="col" className="px-6 py-3">
+                <th scope="col" className="2xl:px-6 xl:px-4 px-2 py-3">
                   Action
                 </th>
               </tr>
@@ -145,17 +148,19 @@ const UsersTable = () => {
               {users?.map((el, index) => (
                 <tr
                   key={el._id}
-                  className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b text-[16px] font-medium text-gray-800 text-center cursor-pointer"
+                  className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b 2xl:text-base text-sm font-medium text-gray-800 text-center cursor-pointer"
                 >
-                  <td className="px-6 py-4">
+                  <td className="2xl:px-6 xl:px-4 px-2 py-4">
                     {((pagination?.currentPage ?? 1) - 1) *
                       (pagination?.totalPages ?? 10) +
                       index +
                       1}
                   </td>
-                  <td className="px-6 py-4 text-primary">{el.businessName}</td>
-                  <td className="px-6 py-4">{el.phone}</td>
-                  <td className="px-6 py-4">{el.email}</td>
+                  <td className="2xl:px-6 xl:px-4 px-2 py-4 text-primary">
+                    {el.businessName}
+                  </td>
+                  <td className="2xl:px-6 xl:px-4 px-2 py-4">{el.phone}</td>
+                  <td className="2xl:px-6 xl:px-4 px-2 py-4">{el.email}</td>
                   <td
                     className={`px-6 py-4 capitalize ${
                       el.subscription ? "text-green-500" : "text-red-500"
@@ -163,12 +168,12 @@ const UsersTable = () => {
                   >
                     {el.subscription ? "Paid" : "Unpaid"}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="2xl:px-6 xl:px-4 px-2 py-4">
                     {el.currentSubscriptionPayDate
                       ? formatDate(el.currentSubscriptionPayDate)
                       : "Not Paid"}
                   </td>
-                  <td className="px-6 py-4 flex justify-center items-center space-x-6">
+                  <td className="2xl:px-6 xl:px-4 px-2 py-4 flex justify-center items-center 2xl:space-x-6 xl:space-x-4 space-x-2">
                     <button onClick={() => router.push(`/users/${el._id}`)}>
                       <BiSolidShow className="text-green-400 hover:text-green-500 size-6" />
                     </button>

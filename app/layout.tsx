@@ -1,6 +1,10 @@
 import "@/styles/globals.css";
 import { ReactNode } from "react";
 
+export const metadata: Metadata = {
+  metadataBase: new URL("https://10x-tax-software-admin.vercel.app"),
+};
+
 export default async function RootLayout({
   children,
 }: {

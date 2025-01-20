@@ -50,7 +50,7 @@ const DashboardMonthlySubscriptionsChart = ({ usersDataList }: any) => {
       if (user?.subscription) {
         monthlySubscriptionData[monthIndex].subscribed++;
       } else {
-        monthlySubscriptionData[monthIndex].unsubscribed++;
+        // monthlySubscriptionData[monthIndex].unsubscribed++;
       }
     });
 

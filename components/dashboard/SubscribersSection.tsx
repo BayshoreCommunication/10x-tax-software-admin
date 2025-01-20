@@ -50,8 +50,6 @@ const SubscribersSection = ({ usersDataList, userStats }: any) => {
 
   const newPaymentList = paymentList.slice(0, 5);
 
-  console.log("cehckd agfeds", userStats);
-
   return (
     <div className=" my-5 flex items-stretch justify-between gap-x-5 w-full">
       <div className=" bg-white 2xl:p-12 xl:p-8 lg:p-6 w-[75%]">

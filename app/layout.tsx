@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import { ReactNode } from "react";
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://10x-tax-software-admin.vercel.app"),

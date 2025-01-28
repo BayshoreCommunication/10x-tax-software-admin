@@ -82,7 +82,12 @@ export async function updateTaxRangeSheetData(
           "Content-Type": "application/json",
           Authorization: `${session.user.accessToken}`,
         },
-        body: JSON.stringify({ taxRates: taxData }),
+        body: JSON.stringify({
+          single: taxData?.single,
+          marriedFilingJointly: taxData?.marriedFilingJointly,
+          marriedFilingSeparately: taxData?.marriedFilingSeparately,
+          headOfHousehold: taxData?.headOfHousehold,
+        }),
       }
     );
     revalidateTag("taxRangeSheetUpdate");

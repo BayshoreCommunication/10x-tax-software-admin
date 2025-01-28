@@ -5,60 +5,58 @@ import { MdHorizontalRule } from "react-icons/md";
 import { toast } from "react-toastify";
 
 const TaxUpdate = ({ setTaxUpdateFlag, taxRangeSheet }: any) => {
-  const [taxData, setTaxData] = useState(taxRangeSheet?.taxRates);
+  const [taxData, setTaxData] = useState(taxRangeSheet);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    taxRate: string,
-    category: string,
-    type: string
+    category: string, // e.g., "single", "marriedFilingJointly"
+    index: number, // Index of the tax bracket in the array
+    type: string // "min" or "max"
   ) => {
     const value = e.target.value;
-
     const parsedValue = value === "" ? "" : Number(value);
 
-    setTaxData((prevState: any) => {
-      return prevState.map((row: any) => {
-        if (row.TaxRate === taxRate) {
-          return {
-            ...row,
-            [category]: {
-              ...row[category],
+    setTaxData((prevState: any) => ({
+      ...prevState,
+      [category]: prevState[category].map((bracket: any, i: number) =>
+        i === index
+          ? {
+              ...bracket,
               [type]: parsedValue,
-            },
-          };
-        }
-        return row;
-      });
-    });
+            }
+          : bracket
+      ),
+    }));
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setError(null);
     setLoading(true);
 
     try {
+      // Validate if taxRangeSheet ID exists
       if (!taxRangeSheet?._id) {
         setError("Invalid tax range sheet ID.");
         return;
       }
 
+      // Call the API to update the tax range sheet
       const response = await updateTaxRangeSheetData(
-        taxData,
-        taxRangeSheet?._id
+        taxData, // Pass the updated taxData
+        taxRangeSheet._id // Pass the valid sheet ID
       );
 
       if (!response.ok) {
-        setError(response.error || "Invalid tax range update.");
-        return;
+        throw new Error(response.error || "Invalid tax range update.");
       }
+
       console.log("Tax Range Sheet Updated Successfully:", response.data);
       toast.success("Tax Range Sheet Updated!");
-      setTaxUpdateFlag(false);
+      setTaxUpdateFlag(false); // Reset the update flag
     } catch (error) {
       console.error("Error during update:", error);
       setError(
@@ -67,7 +65,7 @@ const TaxUpdate = ({ setTaxUpdateFlag, taxRangeSheet }: any) => {
           : "An unexpected error occurred. Please try again later."
       );
     } finally {
-      setLoading(false);
+      setLoading(false); // Ensure loading state is reset
     }
   };
 
@@ -89,19 +87,19 @@ const TaxUpdate = ({ setTaxUpdateFlag, taxRangeSheet }: any) => {
               <th scope="col" className="px-6 py-3 border-r-1 border-gray-300">
                 Married Filing Separately
               </th>
-              <th scope="col" className="px-6 py-3 ">
+              <th scope="col" className="px-6 py-3">
                 Head of Household
               </th>
             </tr>
           </thead>
           <tbody>
-            {taxData?.map((el: any, index: any) => (
+            {taxData?.single?.map((el: any, index: number) => (
               <tr
                 className="border-b text-[16px] font-medium text-gray-800 text-center cursor-pointer border-gray-300"
                 key={index}
               >
                 <td className="px-6 py-4 border-r-1 border-gray-300 hover:bg-gray-100">
-                  {el?.TaxRate}
+                  {el?.rate}%
                 </td>
 
                 {/* Individual Input Fields */}
@@ -112,24 +110,20 @@ const TaxUpdate = ({ setTaxUpdateFlag, taxRangeSheet }: any) => {
                       autoComplete="off"
                       type="number"
                       className="border-primary text-base rounded-lg focus:ring-none pl-1 placeholder-gray-400 active:border-primary outline-none py-2 w-24"
-                      value={
-                        el?.Individual.min === "" ? "" : el?.Individual.min
-                      }
+                      value={el?.min === "" ? "" : el?.min}
                       onChange={(e) =>
-                        handleInputChange(e, el.TaxRate, "Individual", "min")
+                        handleInputChange(e, "single", index, "min")
                       }
                     />
                     <MdHorizontalRule className="size-5 text-black" />
                     <span>$</span>
                     <input
                       autoComplete="off"
-                      type="number"
+                      type={el?.max === null ? "text" : "number"}
                       className="border-primary text-base rounded-lg focus:ring-none pl-1 placeholder-gray-400 active:border-primary outline-none py-2 w-24"
-                      value={
-                        el?.Individual.max === "" ? "" : el?.Individual.max
-                      }
+                      value={el?.max === null ? "More" : el?.max}
                       onChange={(e) =>
-                        handleInputChange(e, el.TaxRate, "Individual", "max")
+                        handleInputChange(e, "single", index, "max")
                       }
                     />
                   </div>
@@ -144,15 +138,15 @@ const TaxUpdate = ({ setTaxUpdateFlag, taxRangeSheet }: any) => {
                       type="number"
                       className="border-primary text-base rounded-lg focus:ring-none pl-1 placeholder-gray-400 active:border-primary outline-none py-2 w-24"
                       value={
-                        el?.MarriedFilingJointly.min === ""
+                        taxData?.marriedFilingJointly[index]?.min === ""
                           ? ""
-                          : el?.MarriedFilingJointly.min
+                          : taxData?.marriedFilingJointly[index]?.min
                       }
                       onChange={(e) =>
                         handleInputChange(
                           e,
-                          el.TaxRate,
-                          "MarriedFilingJointly",
+                          "marriedFilingJointly",
+                          index,
                           "min"
                         )
                       }
@@ -161,18 +155,22 @@ const TaxUpdate = ({ setTaxUpdateFlag, taxRangeSheet }: any) => {
                     <span>$</span>
                     <input
                       autoComplete="off"
-                      type="number"
+                      type={
+                        taxData?.marriedFilingJointly[index]?.max === null
+                          ? "text"
+                          : "number"
+                      }
                       className="border-primary text-base rounded-lg focus:ring-none pl-1 placeholder-gray-400 active:border-primary outline-none py-2 w-24"
                       value={
-                        el?.MarriedFilingJointly.max === ""
-                          ? ""
-                          : el?.MarriedFilingJointly.max
+                        taxData?.marriedFilingJointly[index]?.max === null
+                          ? "More"
+                          : taxData?.marriedFilingJointly[index]?.max
                       }
                       onChange={(e) =>
                         handleInputChange(
                           e,
-                          el.TaxRate,
-                          "MarriedFilingJointly",
+                          "marriedFilingJointly",
+                          index,
                           "max"
                         )
                       }
@@ -189,15 +187,15 @@ const TaxUpdate = ({ setTaxUpdateFlag, taxRangeSheet }: any) => {
                       type="number"
                       className="border-primary text-base rounded-lg focus:ring-none pl-1 placeholder-gray-400 active:border-primary outline-none py-2 w-24"
                       value={
-                        el?.MarriedFilingSeparately.min === ""
+                        taxData?.marriedFilingSeparately[index]?.min === ""
                           ? ""
-                          : el?.MarriedFilingSeparately.min
+                          : taxData?.marriedFilingSeparately[index]?.min
                       }
                       onChange={(e) =>
                         handleInputChange(
                           e,
-                          el.TaxRate,
-                          "MarriedFilingSeparately",
+                          "marriedFilingSeparately",
+                          index,
                           "min"
                         )
                       }
@@ -206,18 +204,22 @@ const TaxUpdate = ({ setTaxUpdateFlag, taxRangeSheet }: any) => {
                     <span>$</span>
                     <input
                       autoComplete="off"
-                      type="number"
+                      type={
+                        taxData?.marriedFilingSeparately[index]?.max === null
+                          ? "text"
+                          : "number"
+                      }
                       className="border-primary text-base rounded-lg focus:ring-none pl-1 placeholder-gray-400 active:border-primary outline-none py-2 w-24"
                       value={
-                        el?.MarriedFilingSeparately.max === ""
-                          ? ""
-                          : el?.MarriedFilingSeparately.max
+                        taxData?.marriedFilingSeparately[index]?.max === null
+                          ? "More"
+                          : taxData?.marriedFilingSeparately[index]?.max
                       }
                       onChange={(e) =>
                         handleInputChange(
                           e,
-                          el.TaxRate,
-                          "MarriedFilingSeparately",
+                          "marriedFilingSeparately",
+                          index,
                           "max"
                         )
                       }
@@ -234,37 +236,31 @@ const TaxUpdate = ({ setTaxUpdateFlag, taxRangeSheet }: any) => {
                       type="number"
                       className="border-primary text-base rounded-lg focus:ring-none pl-1 placeholder-gray-400 active:border-primary outline-none py-2 w-24"
                       value={
-                        el?.HeadOfHousehold.min === ""
+                        taxData?.headOfHousehold[index]?.min === ""
                           ? ""
-                          : el?.HeadOfHousehold.min
+                          : taxData?.headOfHousehold[index]?.min
                       }
                       onChange={(e) =>
-                        handleInputChange(
-                          e,
-                          el.TaxRate,
-                          "HeadOfHousehold",
-                          "min"
-                        )
+                        handleInputChange(e, "headOfHousehold", index, "min")
                       }
                     />
                     <MdHorizontalRule className="size-5 text-black" />
                     <span>$</span>
                     <input
                       autoComplete="off"
-                      type="number"
+                      type={
+                        taxData?.headOfHousehold[index]?.max === null
+                          ? "text"
+                          : "number"
+                      }
                       className="border-primary text-base rounded-lg focus:ring-none pl-1 placeholder-gray-400 active:border-primary outline-none py-2 w-24"
                       value={
-                        el?.HeadOfHousehold.max === ""
-                          ? ""
-                          : el?.HeadOfHousehold.max
+                        taxData?.headOfHousehold[index]?.max === null
+                          ? "More"
+                          : taxData?.headOfHousehold[index]?.max
                       }
                       onChange={(e) =>
-                        handleInputChange(
-                          e,
-                          el.TaxRate,
-                          "HeadOfHousehold",
-                          "max"
-                        )
+                        handleInputChange(e, "headOfHousehold", index, "max")
                       }
                     />
                   </div>

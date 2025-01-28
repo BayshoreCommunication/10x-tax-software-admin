@@ -3,13 +3,13 @@
 import { MdHorizontalRule } from "react-icons/md";
 
 const TaxView = ({ setTaxUpdateFlag, taxRangeSheet }: any) => {
-
+  console.log("check value item 8", taxRangeSheet);
 
   return (
     <div className="">
       <div className="relative overflow-x-auto">
         <table className="w-full text-left rtl:text-right text-gray-500 border-1 border-gray-300">
-          <thead className="text-[16px] font-medium text-gray-800  text-center border-gray-300 border-b-1">
+          <thead className="text-[16px] font-medium text-gray-800 text-center border-gray-300 border-b-1">
             <tr>
               <th scope="col" className="px-6 py-3 border-r-1 border-gray-300">
                 Tax Rate
@@ -23,68 +23,88 @@ const TaxView = ({ setTaxUpdateFlag, taxRangeSheet }: any) => {
               <th scope="col" className="px-6 py-3 border-r-1 border-gray-300">
                 Married Filing Separately
               </th>
-              <th scope="col" className="px-6 py-3 ">
+              <th scope="col" className="px-6 py-3">
                 Head of Household
               </th>
             </tr>
           </thead>
           <tbody>
-            {taxRangeSheet?.taxRates?.map((el: any, index: number) => (
+            {taxRangeSheet?.single?.map((el: any, index: number) => (
               <tr
-                className="border-b text-[16px] font-medium text-gray-800 text-center  cursor-pointer border-gray-300"
                 key={index}
+                className="border-b text-[16px] font-medium text-gray-800 text-center cursor-pointer border-gray-300"
               >
+                {/* Tax Rate Column */}
                 <td className="px-6 py-4 border-r-1 border-gray-300 hover:bg-gray-100">
-                  {el?.TaxRate}%
+                  {el?.rate}%
                 </td>
-                <td className="px-6 py-4 border-r-1 border-gray-300 hover:bg-gray-100">
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="flex items-center space-x-1">
-                      <span>$</span>
-                      <p> {el?.Individual?.min}</p>
-                    </div>
-                    <MdHorizontalRule className="size-5 text-black" />
-                    <div className="flex items-center space-x-1">
-                      <span>$</span> <p>{el?.Individual?.max}</p>
-                    </div>
-                  </div>
-                </td>
+
+                {/* Individual Column */}
                 <td className="px-6 py-4 border-r-1 border-gray-300 hover:bg-gray-100">
                   <div className="flex items-center justify-center space-x-2">
                     <div className="flex items-center space-x-1">
                       <span>$</span>
-                      <p> {el?.MarriedFilingJointly?.min} </p>
+                      <p>{el?.min}</p>
                     </div>
                     <MdHorizontalRule className="size-5 text-black" />
                     <div className="flex items-center space-x-1">
-                      <span>$</span> <p> {el?.MarriedFilingJointly?.max}</p>
-                    </div>
-                  </div>
-                </td>
-                <td
-                  className={`px-6 py-4 border-r-1 border-gray-300 hover:bg-gray-100`}
-                >
-                  <div className="flex items-center justify-center space-x-2">
-                    <div className="flex items-center space-x-1">
-                      <span>$</span>
-                      <p> {el?.MarriedFilingSeparately?.min}</p>
-                    </div>
-                    <MdHorizontalRule className="size-5 text-black" />
-                    <div className="flex items-center space-x-1">
-                      <span>$</span> <p> {el?.MarriedFilingSeparately?.max}</p>
+                      <p>{el?.max === null ? "More" : "$" + el?.max}</p>
                     </div>
                   </div>
                 </td>
 
-                <td className={`px-6 py-4 hover:bg-gray-100`}>
+                {/* Married Filing Jointly Column */}
+                <td className="px-6 py-4 border-r-1 border-gray-300 hover:bg-gray-100">
                   <div className="flex items-center justify-center space-x-2">
                     <div className="flex items-center space-x-1">
                       <span>$</span>
-                      <p> {el?.HeadOfHousehold?.min} </p>
+                      <p>{taxRangeSheet?.marriedFilingJointly[index]?.min}</p>
                     </div>
                     <MdHorizontalRule className="size-5 text-black" />
                     <div className="flex items-center space-x-1">
-                      <span>$</span> <p>{el?.HeadOfHousehold?.max}</p>
+                      <p>
+                        {taxRangeSheet.marriedFilingJointly[index].max === null
+                          ? "More"
+                          : "$" + taxRangeSheet.marriedFilingJointly[index].max}
+                      </p>
+                    </div>
+                  </div>
+                </td>
+
+                {/* Married Filing Separately Column */}
+                <td className="px-6 py-4 border-r-1 border-gray-300 hover:bg-gray-100">
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="flex items-center space-x-1">
+                      <span>$</span>
+                      <p>{taxRangeSheet.marriedFilingSeparately[index].min}</p>
+                    </div>
+                    <MdHorizontalRule className="size-5 text-black" />
+                    <div className="flex items-center space-x-1">
+                      <p>
+                        {taxRangeSheet.marriedFilingSeparately[index].max ===
+                        null
+                          ? "More"
+                          : "$" +
+                            taxRangeSheet.marriedFilingSeparately[index].max}
+                      </p>
+                    </div>
+                  </div>
+                </td>
+
+                {/* Head of Household Column */}
+                <td className="px-6 py-4 hover:bg-gray-100">
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="flex items-center space-x-1">
+                      <span>$</span>
+                      <p>{taxRangeSheet.headOfHousehold[index].min}</p>
+                    </div>
+                    <MdHorizontalRule className="size-5 text-black" />
+                    <div className="flex items-center space-x-1">
+                      <p>
+                        {taxRangeSheet.headOfHousehold[index].max === null
+                          ? "More"
+                          : "$" + taxRangeSheet.headOfHousehold[index].max}
+                      </p>
                     </div>
                   </div>
                 </td>

@@ -138,7 +138,7 @@ export async function getAllUserData(
 
   try {
     const query = new URLSearchParams({
-      search,
+      search: search,
       page: page.toString(),
       limit: limit.toString(),
     }).toString();
@@ -151,7 +151,9 @@ export async function getAllUserData(
           "Content-Type": "application/json",
           Authorization: `${session.user.accessToken}`,
         },
-        next: { tags: ["userUpdate", "userDelete"], revalidate: 360 },
+        next: {
+          tags: [""],
+        },
       }
     );
 
@@ -182,6 +184,67 @@ export async function getAllUserData(
     };
   }
 }
+
+// export async function getAllUserData(
+//   search: string = "",
+//   page: number = 1,
+//   limit: number = 10000
+// ): Promise<UserDataResponse> {
+//   const session = await auth();
+
+//   if (!session?.user?.accessToken) {
+//     return {
+//       error: "User is not authenticated.",
+//       ok: false,
+//     };
+//   }
+
+//   try {
+//     const query = new URLSearchParams({
+//       search,
+//       page: page.toString(),
+//       limit: limit.toString(),
+//     }).toString();
+
+//     const response = await fetch(
+//       `${process.env.NEXT_PUBLIC_API_URL}/api/users?${query}`,
+//       {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+//           Authorization: `${session.user.accessToken}`,
+//         },
+//         next: { tags: ["userUpdate", "userDelete"], revalidate: 360 },
+//       }
+//     );
+
+//     if (!response.ok) {
+//       const errorData = await response.json();
+//       console.error("Failed to fetch user data:", errorData);
+//       return {
+//         error: errorData?.message || "Failed to fetch user data.",
+//         ok: false,
+//         data: null,
+//       };
+//     }
+
+//     const data = await response.json();
+
+//     return {
+//       ok: true,
+//       data: data?.payload || null,
+//     };
+//   } catch (error: any) {
+//     console.error("Error fetching user data:", error);
+//     return {
+//       error:
+//         error?.message ||
+//         "An unexpected error occurred. Please try again later.",
+//       ok: false,
+//       data: null,
+//     };
+//   }
+// }
 
 // User delted by id
 

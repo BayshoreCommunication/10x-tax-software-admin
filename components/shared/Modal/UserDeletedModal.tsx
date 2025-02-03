@@ -6,13 +6,17 @@ import { toast } from "react-toastify";
 
 interface UserDeletedModalProps {
   userDeletedModalFlag: boolean;
-  userId: string | null; // Keep null as a possible value if the userId can be null
+  userId: string | null;
   setUserDeletedModalFlag: (value: boolean) => void;
+  userDeletedValue: boolean;
+  setUserDeletedValue: (value: boolean) => void;
 }
 
 const UserDeletedModal: React.FC<UserDeletedModalProps> = ({
   userDeletedModalFlag,
   setUserDeletedModalFlag,
+  userDeletedValue,
+  setUserDeletedValue,
   userId,
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -34,6 +38,7 @@ const UserDeletedModal: React.FC<UserDeletedModalProps> = ({
       if (response.ok) {
         toast.success("Successfully deleted user");
         setUserDeletedModalFlag(false);
+        setUserDeletedValue(!userDeletedValue);
       } else {
         toast.error(response.error || "Failed to delete user.");
       }

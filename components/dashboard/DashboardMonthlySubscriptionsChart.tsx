@@ -5,7 +5,7 @@ import MonthlySubscriptionsChart from "../shared/rechart/MonthlySubscriptionsCha
 import SubscribersSection from "./SubscribersSection";
 
 const DashboardMonthlySubscriptionsChart = ({ usersDataList }: any) => {
-  const calculateUserStats = (users: any) => {
+  const calculateUserStats = (users: any[]) => {
     const currentDate = new Date();
     let weeklyUsers = 0;
     let weeklySubscribedUsers = 0;
@@ -17,6 +17,7 @@ const DashboardMonthlySubscriptionsChart = ({ usersDataList }: any) => {
     let currentMonthUsers = 0;
     let lastMonthUsers = 0;
 
+    // Ensure the array has objects with both subscribed and unsubscribed initialized
     const monthlySubscriptionData = Array.from({ length: 12 }, () => ({
       subscribed: 0,
       unsubscribed: 0,
@@ -26,10 +27,15 @@ const DashboardMonthlySubscriptionsChart = ({ usersDataList }: any) => {
     const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
 
     users.forEach((user: any) => {
+      if (!user.currentSubscriptionPayDate) return; // Skip if date is missing
+
       const payDate = new Date(user.currentSubscriptionPayDate);
+      if (isNaN(payDate.getTime())) return; // Skip if invalid date
+
       const diffInTime = currentDate.getTime() - payDate.getTime();
       const diffInDays = diffInTime / (1000 * 3600 * 24);
 
+      // Count users based on time periods
       if (diffInDays <= 7) {
         weeklyUsers++;
         if (user.subscription) weeklySubscribedUsers++;
@@ -43,19 +49,22 @@ const DashboardMonthlySubscriptionsChart = ({ usersDataList }: any) => {
         if (user.subscription) yearlySubscribedUsers++;
       }
 
+      // Monthly user counts
       if (payDate.getMonth() === currentMonth) currentMonthUsers++;
       if (payDate.getMonth() === lastMonth) lastMonthUsers++;
 
-      const monthIndex = payDate?.getMonth();
-      if (user?.subscription) {
-        monthlySubscriptionData[monthIndex].subscribed++;
-      } else {
-        // monthlySubscriptionData[monthIndex].unsubscribed++;
+      // Safely update monthly subscription data
+      const monthIndex = payDate.getMonth();
+      if (monthIndex >= 0 && monthIndex < 12) {
+        if (user.subscription) {
+          monthlySubscriptionData[monthIndex].subscribed++;
+        } else {
+          monthlySubscriptionData[monthIndex].unsubscribed++;
+        }
       }
     });
 
-    const totalUsers = users.length;
-
+    // Ratios
     const weeklyRatio = weeklyUsers
       ? ((weeklySubscribedUsers / weeklyUsers) * 100).toFixed(2) + "%"
       : "0%";
@@ -65,6 +74,7 @@ const DashboardMonthlySubscriptionsChart = ({ usersDataList }: any) => {
     const yearlyRatio = yearlyUsers
       ? ((yearlySubscribedUsers / yearlyUsers) * 100).toFixed(2) + "%"
       : "0%";
+
     const currentMonthVsLastMonthRatio =
       currentMonthUsers + lastMonthUsers
         ? (
@@ -73,6 +83,7 @@ const DashboardMonthlySubscriptionsChart = ({ usersDataList }: any) => {
           ).toFixed(2) + "%"
         : "0%";
 
+    // Monthly stats with month names
     const monthlyStats = [
       { name: "January", ...monthlySubscriptionData[0] },
       { name: "February", ...monthlySubscriptionData[1] },
@@ -89,7 +100,7 @@ const DashboardMonthlySubscriptionsChart = ({ usersDataList }: any) => {
     ];
 
     return {
-      totalUsers,
+      totalUsers: users.length,
       weeklyUsers,
       weeklySubscribedUsers,
       monthlyUsers,

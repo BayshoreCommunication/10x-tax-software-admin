@@ -41,7 +41,7 @@ export async function credentialLogin(formData: FormData): Promise<{
 
   try {
     // Use POST method to send credentials
-    const response = await fetch(`${apiUrl}/api/user/login`, {
+    const response = await fetch(`${apiUrl}/api/admin/login`, {
       method: "Post",
       headers: {
         "Content-Type": "application/json",

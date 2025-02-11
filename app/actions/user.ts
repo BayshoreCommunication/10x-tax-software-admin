@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { revalidateTag } from "next/cache";
+import { revalidateTag, unstable_cache } from "next/cache";
 
 interface UserDataResponse {
   error?: string;
@@ -29,7 +29,7 @@ export async function getUserData(): Promise<UserDataResponse> {
           "Content-Type": "application/json",
           Authorization: `${session?.user?.accessToken || ""}`,
         },
-        next: { tags: ["taxRangeSheetUpdate"], revalidate: 360 },
+        next: { tags: ["userDataUpdate"], revalidate: 360 },
       }
     );
 
@@ -50,6 +50,42 @@ export async function getUserData(): Promise<UserDataResponse> {
     };
   } catch (error) {
     console.error("Error fetching user data:", error);
+    return {
+      error: "An unexpected error occurred. Please try again later.",
+      ok: false,
+      data: null,
+    };
+  }
+}
+
+export async function getUserDataTest(
+  headers: HeadersInit
+): Promise<UserDataResponse> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/user`,
+      {
+        method: "GET",
+        headers,
+        next: { tags: ["userDataCache"], revalidate: 360 }, // Cache with a tag
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        error: errorData?.message || "Failed to fetch user data.",
+        ok: false,
+        data: null,
+      };
+    }
+
+    const data = await response.json();
+    return {
+      ok: true,
+      data: data?.payload?.user || null,
+    };
+  } catch (error) {
     return {
       error: "An unexpected error occurred. Please try again later.",
       ok: false,
@@ -185,69 +221,6 @@ export async function getAllUserData(
   }
 }
 
-// export async function getAllUserData(
-//   search: string = "",
-//   page: number = 1,
-//   limit: number = 10000
-// ): Promise<UserDataResponse> {
-//   const session = await auth();
-
-//   if (!session?.user?.accessToken) {
-//     return {
-//       error: "User is not authenticated.",
-//       ok: false,
-//     };
-//   }
-
-//   try {
-//     const query = new URLSearchParams({
-//       search,
-//       page: page.toString(),
-//       limit: limit.toString(),
-//     }).toString();
-
-//     const response = await fetch(
-//       `${process.env.NEXT_PUBLIC_API_URL}/api/users?${query}`,
-//       {
-//         method: "GET",
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `${session.user.accessToken}`,
-//         },
-//         next: { tags: ["userUpdate", "userDelete"], revalidate: 360 },
-//       }
-//     );
-
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       console.error("Failed to fetch user data:", errorData);
-//       return {
-//         error: errorData?.message || "Failed to fetch user data.",
-//         ok: false,
-//         data: null,
-//       };
-//     }
-
-//     const data = await response.json();
-
-//     return {
-//       ok: true,
-//       data: data?.payload || null,
-//     };
-//   } catch (error: any) {
-//     console.error("Error fetching user data:", error);
-//     return {
-//       error:
-//         error?.message ||
-//         "An unexpected error occurred. Please try again later.",
-//       ok: false,
-//       data: null,
-//     };
-//   }
-// }
-
-// User delted by id
-
 export async function userDeletedById(id: string): Promise<UserDataResponse> {
   const session = await auth();
 
@@ -361,3 +334,15 @@ export async function userSubscriptionById(
     };
   }
 }
+
+export const getCachedAllUsersData = unstable_cache(
+  async (headers) => await getUserDataTest(headers), // Ensure async
+  ["userDataCache"],
+  { revalidate: 360 }
+);
+
+export const getCachedUserData = unstable_cache(
+  async (headers) => await getAllUserData(headers), // Ensure async
+  ["userDataCache"],
+  { revalidate: 360 }
+);

@@ -201,7 +201,7 @@ const UserSubscriptionDetails = ({ userId }: any) => {
 
       <div className="relative overflow-x-auto bg-white pb-10 min-h-[30vh] px-8">
         {isLoading ? (
-          <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="flex items-center justify-center min-h-[30vh]">
             <Spinner size="lg" label="Loading..." />
           </div>
         ) : subscriptionData?.length > 0 ? (

@@ -43,6 +43,7 @@ const UserDetails = ({ userDetails }: any) => {
             alt="User Picture"
             width={200}
             height={200}
+            className="w-[250px] h-[250px] bg-cover bg-center"
           />
         </div>
         <div
@@ -76,9 +77,9 @@ const UserDetails = ({ userDetails }: any) => {
           <ul className="max-w-md space-x-8 text-gray-700 list-disc list-inside flex items-center text-lg font-normal">
             <li>
               Monthly Subscription:{" "}
-              {userDetails?.currentSubscriptionType === "monthly"
+              {userDetails?.currentSubscriptionType === "month"
                 ? "$29 USD"
-                : "$99 USD"}
+                : "$229 USD"}
             </li>
             <li>
               Subscription Date:{" "}

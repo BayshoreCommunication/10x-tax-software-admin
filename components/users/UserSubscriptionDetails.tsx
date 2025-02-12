@@ -2,208 +2,257 @@
 
 import { userSubscriptionById } from "@/app/actions/user";
 import { Spinner } from "@nextui-org/react";
-import { useEffect, useState } from "react";
+import debounce from "lodash.debounce";
+import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { BsThreeDots } from "react-icons/bs";
 import { formatDate } from "../shared/DateFormat";
 import UserSearchOption from "./UserSearchOption";
 
-const UserSubscriptionDetails = ({ userId }: { userId: string }) => {
-  const [state, setState] = useState({
-    subscriptions: [],
-    pagination: {
-      totalPages: 0,
-      previousPage: null,
-      nextPage: null,
-    },
-    search: "",
-    filterOption: "",
-    currentPage: 1,
-    limit: 10,
-    isLoading: false,
-    error: null,
+interface Pagination {
+  totalPages: number | null;
+  previousPage: number | null;
+  currentPage: number | null;
+  nextPage: number | null;
+}
+interface UserSubscription {
+  _id: string;
+  subscriptionInfo: {
+    subscriptionExpiredDate: string;
+    subscriptionDate: string;
+    type: string;
+  };
+}
+
+const UserSubscriptionDetails = ({ userId }: any) => {
+  const [search, setSearch] = useState("");
+  // Parent component where state is initialized
+  const [state, setState] = useState<{ filterOption: string }>({
+    filterOption: "", // Initialize with a string (empty string or default value)
   });
 
-  const {
-    subscriptions,
-    pagination,
-    search,
-    filterOption,
-    currentPage,
-    limit,
-    isLoading,
-    error,
-  } = state;
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [limit] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [subscriptionData, setSubscriptionData] = useState<UserSubscription[]>(
+    []
+  );
+  const [pagination, setPagination] = useState<Pagination | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const fetchData = async () => {
-    setState((prev) => ({ ...prev, isLoading: true, error: null }));
+  const router = useRouter();
+
+  const fetchUsers = useCallback(async () => {
+    setIsLoading(true);
     try {
       const result = await userSubscriptionById(
         userId,
-        search,
+        debouncedSearch,
         currentPage,
         limit
       );
-      if (result.ok) {
-        setState((prev: any) => ({
-          ...prev,
-          subscriptions: result.data.subscriptions || [],
-          pagination: result.data.pagination || {
-            totalPages: 0,
-            previousPage: null,
-            nextPage: null,
-          },
-          isLoading: false,
-        }));
+      if (result.ok && result.data) {
+        setSubscriptionData(result.data.subscription);
+        setPagination(result.data.pagination);
+
+        if (result.data.pagination.totalPages < currentPage) {
+          setCurrentPage(result.data.pagination.totalPages || 1);
+        }
       } else {
-        setState((prev: any) => ({
-          ...prev,
-          error: result.error,
-          isLoading: false,
-        }));
+        console.error(result.error || "Failed to fetch client data.");
       }
-    } catch (err) {
-      setState((prev: any) => ({
-        ...prev,
-        error: "Failed to fetch data. Please try again.",
-        isLoading: false,
-      }));
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setIsLoading(false);
     }
+  }, [debouncedSearch, currentPage, limit]);
+
+  const debounceSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        setDebouncedSearch(value);
+      }, 300),
+    []
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    debounceSearch(e.target.value);
   };
 
   useEffect(() => {
-    fetchData();
-  }, [userId, search, currentPage, limit, filterOption]);
+    if (state && typeof state === "object") {
+      debounceSearch(state.filterOption ?? "");
+    } else {
+      debounceSearch("");
+    }
+  }, [state]);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState((prev: any) => ({
-      ...prev,
-      search: e.target.value,
-      currentPage: 1, // Reset to first page
-    }));
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  const handlePaginationClick = (page: number) => {
+    if (page > 0 && page !== currentPage) {
+      setCurrentPage(page);
+    }
   };
 
-  const handleFilterChange = (option: string) => {
-    setState((prev: any) => ({
-      ...prev,
-      filterOption: option,
-      currentPage: 1, // Reset to first page
-    }));
-  };
+  const renderPagination = useMemo(() => {
+    const generatePageNumbers = () => {
+      const pageNumbers: number[] = [];
 
-  const handlePageChange = (newPage: number) => {
-    setState((prev: any) => ({ ...prev, currentPage: newPage }));
-  };
+      // Use default values to prevent issues with null or undefined
+      const safeCurrentPage = currentPage ?? 1;
+      const safeTotalPages = pagination?.totalPages ?? 1;
+
+      const startPage = Math.max(1, safeCurrentPage - 1);
+      const endPage = Math.min(safeTotalPages, safeCurrentPage + 1);
+
+      for (let i = startPage; i <= endPage; i++) {
+        pageNumbers.push(i);
+      }
+
+      return pageNumbers;
+    };
+
+    const pageNumbers = generatePageNumbers();
+
+    return (
+      pageNumbers.length > 0 && (
+        <nav aria-label="Page navigation" className="flex justify-end mt-8">
+          <ul className="inline-flex -space-x-px text-base items-center">
+            {/* Previous button */}
+            <li>
+              <button
+                onClick={() => handlePaginationClick((currentPage ?? 1) - 1)}
+                disabled={pagination?.previousPage === null || currentPage <= 1}
+                className="bg-white border rounded-l-lg text-gray-600 hover:bg-gray-100 h-[42px] w-[90px] flex items-center justify-center"
+              >
+                <span>Previous</span>
+              </button>
+            </li>
+
+            {/* Ellipsis before page numbers */}
+            {pagination?.previousPage && pagination.previousPage > 1 && (
+              <li className="h-[42px] w-[45px] border text-gray-600 flex items-center justify-center hover:bg-gray-100">
+                <BsThreeDots />
+              </li>
+            )}
+
+            {/* Page number buttons */}
+            {pageNumbers.map((page) => (
+              <li key={page}>
+                <button
+                  onClick={() => handlePaginationClick(page)}
+                  className={`px-4 py-2 border h-[42px] w-[45px] ${
+                    page === currentPage
+                      ? "bg-primary text-white"
+                      : "bg-white text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  {page}
+                </button>
+              </li>
+            ))}
+
+            {/* Ellipsis after page numbers */}
+            {pagination?.currentPage &&
+              pagination.currentPage + 1 < (pagination.totalPages ?? 0) && (
+                <li className="h-[42px] w-[45px] border text-gray-600 flex items-center justify-center hover:bg-gray-100">
+                  <BsThreeDots />
+                </li>
+              )}
+
+            {/* Next button */}
+            <li>
+              <button
+                onClick={() => handlePaginationClick((currentPage ?? 1) + 1)}
+                disabled={
+                  pagination?.nextPage === null ||
+                  currentPage >= (pagination?.totalPages ?? 1)
+                }
+                className="px-4 py-2 bg-white border rounded-r-lg text-gray-600 hover:bg-gray-100 h-[42px] w-[90px] flex items-center justify-center"
+              >
+                <span>Next</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      )
+    );
+  }, [pagination, currentPage, handlePaginationClick]);
 
   return (
-    <div>
-      <div className="border-2 px-6 py-4 mx-12 mt-3 mb-12">
-        {/* Search and Filter Options */}
-        <div className="mb-10 mt-4 flex items-center justify-between">
-          <form className="w-full">
-            <input
-              autoComplete="off"
-              type="text"
-              className="bg-white border-gray-500 border text-lg w-[40%] pl-6 py-2 placeholder-gray-700 outline-none rounded-full"
-              placeholder="Search"
-              value={search}
-              onChange={handleSearchChange}
-            />
-          </form>
-          <UserSearchOption state={state} setState={setState} />
-        </div>
+    <div className="container py-10">
+      <div className="flex items-center justify-between px-8 py-6">
+        <form className="flex items-center w-[80%]">
+          <input
+            type="text"
+            className="bg-white border-gray-500 border text-lg w-[40%] pl-6 py-2 placeholder-gray-700 outline-none rounded-full"
+            placeholder="Search..."
+            value={search}
+            onChange={handleSearchChange}
+          />
+        </form>
+        <UserSearchOption state={state} setState={setState} />
+      </div>
 
-        {/* Table */}
-        <div className="relative overflow-x-auto">
-          {isLoading ? (
-            <div className="w-full h-[20vh] flex items-center justify-center">
-              <Spinner
-                className="text-[#1B2639]"
-                label="Loading..."
-                size="lg"
-              />
-            </div>
-          ) : subscriptions.length > 0 ? (
-            <table className="w-full text-left text-black border mb-4">
-              <thead className="text-black bg-gray-100 text-center">
+      <div className="relative overflow-x-auto bg-white pb-10 min-h-[30vh] px-8">
+        {isLoading ? (
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <Spinner size="lg" label="Loading..." />
+          </div>
+        ) : subscriptionData?.length > 0 ? (
+          <div className="">
+            <table className="w-full text-left rtl:text-right text-gray-500 ">
+              <thead className="text-[16px] font-medium text-gray-700 text-center bg-[#e5e5e5]">
                 <tr>
-                  <th className="px-6 py-3 border-r">No</th>
-                  <th className="px-6 py-3 border-r">Subscription Date</th>
-                  <th className="px-6 py-3 border-r">Expire Date</th>
-                  <th className="px-6 py-3">Type</th>
+                  {["No", "Subscription Date", "Expire Date", "Type"].map(
+                    (header, idx) => (
+                      <th key={idx} className="px-6 py-3 text-center">
+                        {header}
+                      </th>
+                    )
+                  )}
                 </tr>
               </thead>
               <tbody>
-                {subscriptions.map((sub: any, index: any) => (
+                {subscriptionData?.map((el, index) => (
                   <tr
                     key={index}
-                    className="odd:bg-white even:bg-gray-50 text-center"
+                    className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b 2xl:text-base text-sm font-medium text-gray-800 text-center cursor-pointer"
                   >
-                    <td className="px-6 py-4">
-                      {index + 1 + (currentPage - 1) * limit}
+                    <td className="2xl:px-6 xl:px-4 px-2 py-4">
+                      {((pagination?.currentPage || 0) - 1) * 5 + index + 1}
                     </td>
-                    <td className="px-6 py-4">
-                      {formatDate(sub?.subscriptionInfo?.subscriptionDate)}
+                    <td className="2xl:px-6 xl:px-4 px-2 py-4">
+                      {el?.subscriptionInfo?.subscriptionDate
+                        ? formatDate(el?.subscriptionInfo?.subscriptionDate)
+                        : "Not Paid"}
                     </td>
-                    <td className="px-6 py-4">
-                      {formatDate(
-                        sub?.subscriptionInfo?.subscriptionExpiredDate
-                      )}
+                    <td className="2xl:px-6 xl:px-4 px-2 py-4">
+                      {el?.subscriptionInfo?.subscriptionExpiredDate
+                        ? formatDate(
+                            el?.subscriptionInfo?.subscriptionExpiredDate
+                          )
+                        : "Not Paid"}
                     </td>
-                    <td className="px-6 py-4">{sub?.subscriptionInfo?.type}</td>
+                    <td className="2xl:px-6 xl:px-4 px-2 py-4 capitalize">
+                      {el?.subscriptionInfo?.type}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          ) : error ? (
-            <p className="text-center text-gray-600 text-lg my-10">{error}</p>
-          ) : (
-            <p className="text-center text-gray-600 text-lg my-10">
-              No subscriptions available!
-            </p>
-          )}
-
-          {/* Pagination */}
-          {pagination.totalPages > 1 && (
-            <nav className="flex justify-end mt-8">
-              <ul className="inline-flex -space-x-px">
-                <li>
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={!pagination.previousPage}
-                    className="px-4 py-2 bg-white border rounded-l"
-                  >
-                    Previous
-                  </button>
-                </li>
-                {Array.from(
-                  { length: pagination.totalPages },
-                  (_, i) => i + 1
-                ).map((page) => (
-                  <li key={page}>
-                    <button
-                      onClick={() => handlePageChange(page)}
-                      className={`px-4 py-2 border ${
-                        page === currentPage
-                          ? "bg-primary text-white"
-                          : "bg-white"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  </li>
-                ))}
-                <li>
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={!pagination.nextPage}
-                    className="px-4 py-2 bg-white border rounded-r"
-                  >
-                    Next
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          )}
-        </div>
+            <div className="mr-5"> {renderPagination}</div>
+          </div>
+        ) : (
+          <p className="text-center  text-gray-600 flex items-center justify-center min-h-[20vh]">
+            No user subscription data available.
+          </p>
+        )}
       </div>
     </div>
   );

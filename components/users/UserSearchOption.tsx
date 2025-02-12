@@ -2,25 +2,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { IoIosArrowDown } from "react-icons/io";
 
-type ParentState = {
-  subscriptions: never[];
-  pagination: {
-    totalPages: number;
-    previousPage: null;
-    nextPage: null;
-  };
-  search: string;
-  filterOption: string;
-  currentPage: number;
-  limit: number;
-  isLoading: boolean;
-  error: null;
-};
-
-type UserSearchOptionProps = {
-  state: ParentState;
-  setState: React.Dispatch<React.SetStateAction<ParentState>>;
-};
+// Define the expected state structure
+interface UserSearchOptionProps {
+  state: { filterOption: string }; // Make filterOption a non-optional string
+  setState: React.Dispatch<React.SetStateAction<{ filterOption: string }>>;
+}
 
 const UserSearchOption: React.FC<UserSearchOptionProps> = ({
   state,
@@ -28,16 +14,18 @@ const UserSearchOption: React.FC<UserSearchOptionProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const options = ["All", "Monthly", "Yearly"];
+  const options = ["all", "month", "year"];
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
 
   const handleOptionClick = (value: string) => {
-    const optionValue = value === "All" ? "" : value;
+    const optionValue = value === "all" ? "" : value;
+
     setState((prev) => ({
       ...prev,
-      filterOption: optionValue, // Only update the filterOption
+      filterOption: optionValue,
     }));
+
     setIsOpen(false);
   };
 
@@ -69,7 +57,7 @@ const UserSearchOption: React.FC<UserSearchOptionProps> = ({
         aria-expanded={isOpen}
         onClick={toggleDropdown}
       >
-        <span className="font-medium text-lg">
+        <span className="font-medium text-lg capitalize">
           {state.filterOption || "All"}
         </span>
         <IoIosArrowDown className="text-gray-600 w-5 h-5" />
@@ -86,9 +74,9 @@ const UserSearchOption: React.FC<UserSearchOptionProps> = ({
               <li key={option}>
                 <button
                   type="button"
-                  className={`block w-full px-4 py-2 text-left text-lg ${
-                    state.filterOption === option ||
-                    (option === "All" && !state.filterOption)
+                  className={`block w-full px-4 py-2 text-left text-lg capitalize ${
+                    (state.filterOption === "" && option === "all") ||
+                    state.filterOption === option
                       ? "bg-primary text-white"
                       : "text-gray-700 hover:bg-primary hover:text-white"
                   }`}

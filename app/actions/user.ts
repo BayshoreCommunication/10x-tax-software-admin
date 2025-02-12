@@ -272,12 +272,12 @@ export async function userDeletedById(id: string): Promise<UserDataResponse> {
 
 // User delted by id
 
-export async function userSubscriptionById(
-  id: string,
-  search: string = "",
+export async function userSubscriptionByIds(
+  userId: string,
+  search: string = "52",
   page: number = 1,
-  limit: number = 100,
-  selectFilterOption: string = "All" // New parameter for filtering
+  limit: number = 5,
+  searchOption: string = "all"
 ): Promise<UserDataResponse> {
   const session = await auth();
 
@@ -290,15 +290,16 @@ export async function userSubscriptionById(
   }
 
   try {
+    // Construct query parameters with all required values
     const queryParams = new URLSearchParams({
       search,
       page: page.toString(),
       limit: limit.toString(),
-      selectFilterOption, // Add filter option to query params
+      searchOption: searchOption.toString(),
     });
 
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/subscription/${id}?${queryParams}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/subscription/${userId}?${queryParams}`,
       {
         method: "GET",
         headers: {
@@ -329,6 +330,70 @@ export async function userSubscriptionById(
     console.error("Error fetching subscription data:", error);
     return {
       error: "An unexpected error occurred. Please try again later.",
+      ok: false,
+      data: null,
+    };
+  }
+}
+
+export async function userSubscriptionById(
+  userId: string,
+  search: string = "",
+  page: number = 1,
+  limit: number = 10000
+): Promise<UserDataResponse> {
+  const session = await auth();
+
+  if (!session?.user?.accessToken) {
+    return {
+      error: "User is not authenticated.",
+      ok: false,
+    };
+  }
+
+  try {
+    const queryParams = new URLSearchParams({
+      search: search,
+      page: page.toString(),
+      limit: limit.toString(),
+    }).toString();
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/subscription/${userId}?${queryParams}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${session.user.accessToken}`,
+        },
+        next: {
+          tags: [""],
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Failed to fetch user data:", errorData);
+      return {
+        error: errorData?.message || "Failed to fetch user data.",
+        ok: false,
+        data: null,
+      };
+    }
+
+    const data = await response.json();
+
+    return {
+      ok: true,
+      data: data?.payload || null,
+    };
+  } catch (error: any) {
+    console.error("Error fetching user data:", error);
+    return {
+      error:
+        error?.message ||
+        "An unexpected error occurred. Please try again later.",
       ok: false,
       data: null,
     };

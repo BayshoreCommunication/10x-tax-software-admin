@@ -487,7 +487,7 @@ const UsersTable = () => {
                     className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b 2xl:text-base text-sm font-medium text-gray-800 text-center cursor-pointer"
                   >
                     <td className="2xl:px-6 xl:px-4 px-2 py-4">
-                      {(pagination?.currentPage || 0 - 1) * 10 + index + 1}
+                      {((pagination?.currentPage ?? 1) - 1) * 10 + (index + 1)}
                     </td>
                     <td className="2xl:px-6 xl:px-4 px-2 py-4 text-primary">
                       {el.businessName}

@@ -55,19 +55,38 @@ const UserUpdateInfo: React.FC<UserUpdateInfoProps> = ({
   // Handle logo upload
   const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        if (reader.result) {
-          setLogoPreview(reader.result.toString());
-        }
-      };
-      setBusinessInfoForm((prevState) => ({
-        ...prevState,
-        image: file,
-      }));
-      reader.readAsDataURL(file);
+
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png"];
+    const maxSizeInMB = 1;
+    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
+
+    if (!allowedTypes.includes(file.type)) {
+      setError("Only JPG and PNG formats are allowed.");
+      return;
     }
+
+    if (file.size > maxSizeInBytes) {
+      setError("Image size should be less than 1MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = function () {
+      if (reader.result) {
+        setLogoPreview(reader.result.toString());
+      }
+    };
+
+    reader.readAsDataURL(file);
+
+    setBusinessInfoForm((prevState: any) => ({
+      ...prevState,
+      image: file,
+    }));
+
+    setError(null);
   };
 
   // Handle form submission

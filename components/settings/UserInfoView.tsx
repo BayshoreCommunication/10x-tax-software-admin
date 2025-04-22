@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { TbEditCircle } from "react-icons/tb";
 
 // Define the type for user data
 interface UserData {
@@ -39,14 +38,6 @@ const UserInfoView: React.FC<UserInfoViewProps> = ({
             height={150}
             className="absolute inset-0 rounded-full object-cover w-[150px] h-[150px]"
           />
-          <div className="bg-primary hover:bg-hoverColor p-1 flex items-center justify-center w-8 h-8 border border-white rounded-full absolute bottom-5 right-6 translate-x-1/2 translate-y-1/2 cursor-pointer">
-            <label
-              htmlFor="image"
-              className="cursor-pointer flex items-center justify-center w-full h-full"
-            >
-              <TbEditCircle className="text-white text-xl" />
-            </label>
-          </div>
         </div>
         <h2 className="text-3xl font-bold text-[#11142D]">Taps</h2>
       </div>

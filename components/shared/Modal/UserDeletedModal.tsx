@@ -97,7 +97,7 @@ const UserDeletedModal: React.FC<UserDeletedModalProps> = ({
               <div className="flex items-center justify-center space-x-4 p-4 md:p-5 border-t border-gray-200 rounded-b">
                 <button
                   onClick={userDeletedHandler}
-                  className={`px-6 py-2 text-primary rounded-md font-medium text-base hover:bg-primary border-2 border-primary hover:text-white w-[100px] ${
+                  className={`px-6 py-2 text-primary rounded-md font-medium text-base hover:bg-primary border-2 border-primary hover:text-white w-[100px] h-[50px] ${
                     loading ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                   disabled={loading}
@@ -129,7 +129,7 @@ const UserDeletedModal: React.FC<UserDeletedModalProps> = ({
                 </button>
                 <button
                   onClick={closeModal}
-                  className="px-6 py-2.5 text-white rounded-md font-medium text-base bg-primary hover:bg-[#be9837] hover:text-white w-[100px]"
+                  className="px-6 py-2.5 text-white rounded-md font-medium text-base bg-primary hover:bg-[#be9837] hover:text-white w-[100px] h-[50px]"
                 >
                   Cancel
                 </button>

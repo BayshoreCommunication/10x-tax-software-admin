@@ -5,7 +5,6 @@ import { useState } from "react";
 import { LuEye, LuEyeOff, LuLock, LuUsers } from "react-icons/lu";
 
 import { credentialLogin } from "@/app/actions";
-import { Checkbox } from "@nextui-org/react";
 
 interface SigninFormProps {
   setUserSignInOtpFlag: (flag: boolean) => void;
@@ -140,11 +139,11 @@ const SigninForm: React.FC<SigninFormProps> = ({
         </div>
 
         {/* Remember Me & Links */}
-        <div className="flex items-center justify-between mt-3 mb-8">
+        {/* <div className="flex items-center justify-between mt-3 mb-8">
           <div className="">
             <Checkbox size="md">Remember me</Checkbox>
           </div>
-        </div>
+        </div> */}
 
         {/* <div className="flex items-center mt-3 mb-8 space-x-3">
           <input
